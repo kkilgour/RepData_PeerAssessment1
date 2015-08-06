@@ -7,8 +7,14 @@ output:
 
 
 ## Loading and preprocessing the data
-
-
+```{r}
+dataset <- read.csv('activity.csv')
+head(dataset[is.na(dataset$steps)==FALSE & dataset$steps > 0,], n=10)
+typeof(dataset)
+typeof(dataset$steps)
+typeof(dataset$date)
+typeof(dataset$interval)
+```
 
 ## What is mean total number of steps taken per day?
 
