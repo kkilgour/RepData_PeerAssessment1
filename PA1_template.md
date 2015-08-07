@@ -96,7 +96,25 @@ daily.median <- median(daily$total.steps, na.rm=TRUE)
 The mean daily steps taken is 10766.19 and the median daily steps taken is 10765.
 
 ## What is the average daily activity pattern?
+Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
+```r
+# Import the ggplot library
+library(ggplot2)
+# Calculate a typical day by averaging the number of steps taken at each interval
+typical.day <- ddply(dataset, "interval", summarize, avg.steps = mean(steps, na.rm=TRUE))
+ggplot(data=typical.day, mapping=aes(x=interval, y=avg.steps)) + geom_line()
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
+Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+```r
+ordered <- arrange(typical.day, desc(avg.steps))
+#strftime(ordered[1,1], format="%H%M")
+```
+The interval with the maximum number of steps is ``835``.
 
 
 ## Imputing missing values
