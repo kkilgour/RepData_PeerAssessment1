@@ -111,14 +111,51 @@ ggplot(data=typical.day, mapping=aes(x=interval, y=avg.steps)) + geom_line()
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 ```r
+# Order the data frame by average steps descending to find the interval with the most steps
 ordered <- arrange(typical.day, desc(avg.steps))
 #strftime(ordered[1,1], format="%H%M")
 ```
 The interval with the maximum number of steps is ``835``.
 
-
 ## Imputing missing values
+Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
+```r
+na.dataset <- subset(dataset, subset = is.na(steps))
+head(na.dataset)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
+```
+
+```r
+nrow(na.dataset)
+```
+
+```
+## [1] 2304
+```
+
+```r
+nrow(dataset[is.na(dataset$steps),])
+```
+
+```
+## [1] 2304
+```
+
+Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+
+Create a new dataset that is equal to the original dataset but with the missing data filled in.
+
+Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 
 ## Are there differences in activity patterns between weekdays and weekends?
