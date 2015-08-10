@@ -23,7 +23,6 @@ Calculate the total number of steps taken per day.
 library(plyr)
 # Summarize the dataset by date
 daily <- ddply(dataset, "date", summarize, total.steps = sum(steps))
-head(daily, n=10)
 ```
 
 Make a histogram of the total number of steps taken each day.
@@ -64,10 +63,33 @@ na.dataset <- subset(dataset, subset = is.na(steps))
 There are ```r nrow(na.dataset)``` rows with missing values.
 
 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+```{r}
+# Merge the na.dataset with the typical day dataset
+na.merged <- merge(x=na.dataset, y=typical.day, all.x = TRUE, all.y = FALSE, by = 'interval')
+na.merged$steps <- na.merged$avg.steps
 
-Create a new dataset that is equal to the original dataset but with the missing data filled in.
+# Create a new dataset that is equal to the original dataset but with the missing data filled in.
+dataset.merged <- merge(x=dataset, y=na.merged, all.x=TRUE, all.y=FALSE, by=c('date','interval'))
+# Create a new column
+dataset.merged$steps <- 0
+# If one value for steps.? is missing, replace the steps variable for the one that is set
+dataset.merged[is.na(dataset.merged$steps.x)==TRUE,]$steps <- dataset.merged[is.na(dataset.merged$steps.x)==TRUE,]$steps.y
+dataset.merged[is.na(dataset.merged$steps.y)==TRUE,]$steps <- dataset.merged[is.na(dataset.merged$steps.y)==TRUE,]$steps.x
+# Subset the new dataset to include only the necessary columns
+dataset.merged <- subset(dataset.merged, select=c('steps', 'date', 'interval'))
 
-Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+#Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
+daily.merged <- ddply(dataset.merged, "date", summarize, total.steps = sum(steps))
+hist(daily.merged$total.steps, breaks=20)
 
+daily.mean2 <- mean(daily.merged$total.steps)
+daily.median2 <- median(daily.merged$total.steps)
+```
+The mean daily steps taken is `r sprintf("%.2f", daily.mean2)` and the median daily steps taken is `r sprintf("%.2f", daily.median2)`.
+
+Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+The mean value is the same as the first part, but the median now matches the mean and is slightly higher than in the first part.
+
+Comparing the histograms to one another, the frequency of days around the mean is much higher than it was before.
 
 ## Are there differences in activity patterns between weekdays and weekends?

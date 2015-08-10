@@ -62,21 +62,6 @@ Calculate the total number of steps taken per day.
 library(plyr)
 # Summarize the dataset by date
 daily <- ddply(dataset, "date", summarize, total.steps = sum(steps))
-head(daily, n=10)
-```
-
-```
-##          date total.steps
-## 1  2012-10-01          NA
-## 2  2012-10-02         126
-## 3  2012-10-03       11352
-## 4  2012-10-04       12116
-## 5  2012-10-05       13294
-## 6  2012-10-06       15420
-## 7  2012-10-07       11015
-## 8  2012-10-08          NA
-## 9  2012-10-09       12811
-## 10 2012-10-10        9900
 ```
 
 Make a histogram of the total number of steps taken each day.
@@ -122,40 +107,43 @@ Calculate and report the total number of missing values in the dataset (i.e. the
 
 ```r
 na.dataset <- subset(dataset, subset = is.na(steps))
-head(na.dataset)
 ```
-
-```
-##   steps       date interval
-## 1    NA 2012-10-01        0
-## 2    NA 2012-10-01        5
-## 3    NA 2012-10-01       10
-## 4    NA 2012-10-01       15
-## 5    NA 2012-10-01       20
-## 6    NA 2012-10-01       25
-```
-
-```r
-nrow(na.dataset)
-```
-
-```
-## [1] 2304
-```
-
-```r
-nrow(dataset[is.na(dataset$steps),])
-```
-
-```
-## [1] 2304
-```
+There are ``2304`` rows with missing values.
 
 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
-Create a new dataset that is equal to the original dataset but with the missing data filled in.
+```r
+# Merge the na.dataset with the typical day dataset
+na.merged <- merge(x=na.dataset, y=typical.day, all.x = TRUE, all.y = FALSE, by = 'interval')
+na.merged$steps <- na.merged$avg.steps
 
-Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+# Create a new dataset that is equal to the original dataset but with the missing data filled in.
+dataset.merged <- merge(x=dataset, y=na.merged, all.x=TRUE, all.y=FALSE, by=c('date','interval'))
+# Create a new column
+dataset.merged$steps <- 0
+# If one value for steps.? is missing, replace the steps variable for the one that is set
+dataset.merged[is.na(dataset.merged$steps.x)==TRUE,]$steps <- dataset.merged[is.na(dataset.merged$steps.x)==TRUE,]$steps.y
+dataset.merged[is.na(dataset.merged$steps.y)==TRUE,]$steps <- dataset.merged[is.na(dataset.merged$steps.y)==TRUE,]$steps.x
+# Subset the new dataset to include only the necessary columns
+dataset.merged <- subset(dataset.merged, select=c('steps', 'date', 'interval'))
 
+#Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
+daily.merged <- ddply(dataset.merged, "date", summarize, total.steps = sum(steps))
+hist(daily.merged$total.steps, breaks=20)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+
+```r
+daily.mean2 <- mean(daily.merged$total.steps)
+daily.median2 <- median(daily.merged$total.steps)
+```
+The mean daily steps taken is 10766.19 and the median daily steps taken is 10766.19.
+
+Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+The mean value is the same as the first part, but the median now matches the mean and is slightly higher than in the first part.
+
+Comparing the histograms to one another, the frequency of days around the mean is much higher than it was before.
+```
 
 ## Are there differences in activity patterns between weekdays and weekends?
