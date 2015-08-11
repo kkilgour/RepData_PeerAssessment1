@@ -144,6 +144,22 @@ Do these values differ from the estimates from the first part of the assignment?
 The mean value is the same as the first part, but the median now matches the mean and is slightly higher than in the first part.
 
 Comparing the histograms to one another, the frequency of days around the mean is much higher than it was before.
-```
 
 ## Are there differences in activity patterns between weekdays and weekends?
+For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
+
+Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+```r
+# Determine the weekday of the date
+dataset$weekday <- weekdays(as.Date(dataset$date))
+# Map to weekend or weekday
+dataset$weekday <- mapvalues(dataset$weekday, from=c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), to=c('Weekday', 'Weekday', 'Weekday', 'Weekday', 'Weekday', 'Weekend', 'Weekend'))
+
+#Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
+
+typical.days <- ddply(dataset, c("interval","weekday"), summarize, avg.steps = mean(steps, na.rm=TRUE))
+ggplot(data=typical.days, mapping=aes(x=interval, y=avg.steps)) + geom_line() + facet_wrap(~weekday, ncol=1, nrow=2)
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
