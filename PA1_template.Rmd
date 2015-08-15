@@ -8,12 +8,8 @@ output:
 
 ## Loading and preprocessing the data
 ```{r}
+# Load the dataset from the activity.csv file in the same directory
 dataset <- read.csv('activity.csv')
-head(dataset[is.na(dataset$steps)==FALSE & dataset$steps > 0,], n=10)
-typeof(dataset)
-typeof(dataset$steps)
-typeof(dataset$date)
-typeof(dataset$interval)
 ```
 
 ## What is mean total number of steps taken per day?
@@ -21,7 +17,7 @@ Calculate the total number of steps taken per day.
 ```{r}
 # Include the plyr library to be able to use the ddply function
 library(plyr)
-# Summarize the dataset by date
+# Sum the total number of steps by date
 daily <- ddply(dataset, "date", summarize, total.steps = sum(steps))
 ```
 
@@ -32,6 +28,7 @@ hist(daily$total.steps, breaks=20)
 
 Calculate and report the mean and median of the total number of steps taken per day.
 ```{r}
+# Ignore NA values
 daily.mean <- mean(daily$total.steps, na.rm=TRUE)
 daily.median <- median(daily$total.steps, na.rm=TRUE)
 ```
@@ -44,6 +41,7 @@ Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
 library(ggplot2)
 # Calculate a typical day by averaging the number of steps taken at each interval
 typical.day <- ddply(dataset, "interval", summarize, avg.steps = mean(steps, na.rm=TRUE))
+# Plot a typical day line graph
 ggplot(data=typical.day, mapping=aes(x=interval, y=avg.steps)) + geom_line()
 ```
 
@@ -51,7 +49,7 @@ Which 5-minute interval, on average across all the days in the dataset, contains
 ```{r}
 # Order the data frame by average steps descending to find the interval with the most steps
 ordered <- arrange(typical.day, desc(avg.steps))
-#strftime(ordered[1,1], format="%H%M")
+# Now you can look at the first row to find the interval with the highest average number of steps
 ```
 The interval with the maximum number of steps is ```r ordered[1, 1]```.
 

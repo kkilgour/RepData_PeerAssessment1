@@ -4,54 +4,8 @@
 ## Loading and preprocessing the data
 
 ```r
+# Load the dataset from the activity.csv file in the same directory
 dataset <- read.csv('activity.csv')
-head(dataset[is.na(dataset$steps)==FALSE & dataset$steps > 0,], n=10)
-```
-
-```
-##     steps       date interval
-## 555   117 2012-10-02     2210
-## 556     9 2012-10-02     2215
-## 627     4 2012-10-03      410
-## 631    36 2012-10-03      430
-## 644    25 2012-10-03      535
-## 647    90 2012-10-03      550
-## 648   411 2012-10-03      555
-## 649   413 2012-10-03      600
-## 650   415 2012-10-03      605
-## 651   519 2012-10-03      610
-```
-
-```r
-typeof(dataset)
-```
-
-```
-## [1] "list"
-```
-
-```r
-typeof(dataset$steps)
-```
-
-```
-## [1] "integer"
-```
-
-```r
-typeof(dataset$date)
-```
-
-```
-## [1] "integer"
-```
-
-```r
-typeof(dataset$interval)
-```
-
-```
-## [1] "integer"
 ```
 
 ## What is mean total number of steps taken per day?
@@ -60,7 +14,7 @@ Calculate the total number of steps taken per day.
 ```r
 # Include the plyr library to be able to use the ddply function
 library(plyr)
-# Summarize the dataset by date
+# Sum the total number of steps by date
 daily <- ddply(dataset, "date", summarize, total.steps = sum(steps))
 ```
 
@@ -75,6 +29,7 @@ hist(daily$total.steps, breaks=20)
 Calculate and report the mean and median of the total number of steps taken per day.
 
 ```r
+# Ignore NA values
 daily.mean <- mean(daily$total.steps, na.rm=TRUE)
 daily.median <- median(daily$total.steps, na.rm=TRUE)
 ```
@@ -88,6 +43,7 @@ Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and 
 library(ggplot2)
 # Calculate a typical day by averaging the number of steps taken at each interval
 typical.day <- ddply(dataset, "interval", summarize, avg.steps = mean(steps, na.rm=TRUE))
+# Plot a typical day line graph
 ggplot(data=typical.day, mapping=aes(x=interval, y=avg.steps)) + geom_line()
 ```
 
@@ -98,7 +54,7 @@ Which 5-minute interval, on average across all the days in the dataset, contains
 ```r
 # Order the data frame by average steps descending to find the interval with the most steps
 ordered <- arrange(typical.day, desc(avg.steps))
-#strftime(ordered[1,1], format="%H%M")
+# Now you can look at the first row to find the interval with the highest average number of steps
 ```
 The interval with the maximum number of steps is ``835``.
 
