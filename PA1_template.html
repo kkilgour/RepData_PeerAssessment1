@@ -104,14 +104,16 @@ ordered &lt;- arrange(typical.day, desc(avg.steps))
 <div id="imputing-missing-values" class="section level2">
 <h2>Imputing missing values</h2>
 <p>Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)</p>
-<pre class="r"><code>na.dataset &lt;- subset(dataset, subset = is.na(steps))</code></pre>
+<pre class="r"><code># Subset the dataset to find the rows with missing values
+na.dataset &lt;- subset(dataset, subset = is.na(steps))</code></pre>
 <p>There are <code>2304</code> rows with missing values.</p>
 <p>Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.</p>
-<pre class="r"><code># Merge the na.dataset with the typical day dataset
+<pre class="r"><code># Merge the na.dataset with the typical day dataset on the interval column
 na.merged &lt;- merge(x=na.dataset, y=typical.day, all.x = TRUE, all.y = FALSE, by = 'interval')
 na.merged$steps &lt;- na.merged$avg.steps
 
 # Create a new dataset that is equal to the original dataset but with the missing data filled in.
+# Merge on date and interval
 dataset.merged &lt;- merge(x=dataset, y=na.merged, all.x=TRUE, all.y=FALSE, by=c('date','interval'))
 # Create a new column
 dataset.merged$steps &lt;- 0
@@ -128,8 +130,7 @@ hist(daily.merged$total.steps, breaks=20)</code></pre>
 <pre class="r"><code>daily.mean2 &lt;- mean(daily.merged$total.steps)
 daily.median2 &lt;- median(daily.merged$total.steps)</code></pre>
 <p>The mean daily steps taken is 10766.19 and the median daily steps taken is 10766.19.</p>
-<p>Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps? The mean value is the same as the first part, but the median now matches the mean and is slightly higher than in the first part.</p>
-<p>Comparing the histograms to one another, the frequency of days around the mean is much higher than it was before.</p>
+<p>Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps? The mean value is the same as in the first part of the assignment, but the median now matches the mean and is slightly higher than in the first part of the assignment. Comparing the histograms to one another, the frequency of days around the mean is much higher than it was before.</p>
 </div>
 <div id="are-there-differences-in-activity-patterns-between-weekdays-and-weekends" class="section level2">
 <h2>Are there differences in activity patterns between weekdays and weekends?</h2>
@@ -137,7 +138,7 @@ daily.median2 &lt;- median(daily.merged$total.steps)</code></pre>
 <p>Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.</p>
 <pre class="r"><code># Determine the weekday of the date
 dataset$weekday &lt;- weekdays(as.Date(dataset$date))
-# Map to weekend or weekday
+# Map the day name values to weekend or weekday
 dataset$weekday &lt;- mapvalues(dataset$weekday, from=c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), to=c('Weekday', 'Weekday', 'Weekday', 'Weekday', 'Weekday', 'Weekend', 'Weekend'))
 
 #Make a panel plot containing a time series plot (i.e. type = &quot;l&quot;) of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).

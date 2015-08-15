@@ -62,6 +62,7 @@ The interval with the maximum number of steps is ``835``.
 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
 ```r
+# Subset the dataset to find the rows with missing values
 na.dataset <- subset(dataset, subset = is.na(steps))
 ```
 There are ``2304`` rows with missing values.
@@ -69,11 +70,12 @@ There are ``2304`` rows with missing values.
 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
 ```r
-# Merge the na.dataset with the typical day dataset
+# Merge the na.dataset with the typical day dataset on the interval column
 na.merged <- merge(x=na.dataset, y=typical.day, all.x = TRUE, all.y = FALSE, by = 'interval')
 na.merged$steps <- na.merged$avg.steps
 
 # Create a new dataset that is equal to the original dataset but with the missing data filled in.
+# Merge on date and interval
 dataset.merged <- merge(x=dataset, y=na.merged, all.x=TRUE, all.y=FALSE, by=c('date','interval'))
 # Create a new column
 dataset.merged$steps <- 0
@@ -97,9 +99,7 @@ daily.median2 <- median(daily.merged$total.steps)
 The mean daily steps taken is 10766.19 and the median daily steps taken is 10766.19.
 
 Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
-The mean value is the same as the first part, but the median now matches the mean and is slightly higher than in the first part.
-
-Comparing the histograms to one another, the frequency of days around the mean is much higher than it was before.
+The mean value is the same as in the first part of the assignment, but the median now matches the mean and is slightly higher than in the first part of the assignment.  Comparing the histograms to one another, the frequency of days around the mean is much higher than it was before.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 For this part the weekdays() function may be of some help here. Use the dataset with the filled-in missing values for this part.
@@ -109,7 +109,7 @@ Create a new factor variable in the dataset with two levels – “weekday” an
 ```r
 # Determine the weekday of the date
 dataset$weekday <- weekdays(as.Date(dataset$date))
-# Map to weekend or weekday
+# Map the day name values to weekend or weekday
 dataset$weekday <- mapvalues(dataset$weekday, from=c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'), to=c('Weekday', 'Weekday', 'Weekday', 'Weekday', 'Weekday', 'Weekend', 'Weekend'))
 
 #Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
