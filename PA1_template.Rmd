@@ -13,17 +13,17 @@ dataset <- read.csv('activity.csv')
 ```
 
 ## What is mean total number of steps taken per day?
-Calculate the total number of steps taken per day.
+
 ```{r}
+# Calculate the total number of steps taken per day.
 # Include the plyr library to be able to use the ddply function
 library(plyr)
+
 # Sum the total number of steps by date
 daily <- ddply(dataset, "date", summarize, total.steps = sum(steps))
-```
 
-Make a histogram of the total number of steps taken each day.
-```{r}
-hist(daily$total.steps, breaks=20)
+# Make a histogram of the total number of steps taken each day.
+hist(daily$total.steps, breaks=20, main='Daily Steps Histogram', xlab='Daily Total Steps')
 ```
 
 Calculate and report the mean and median of the total number of steps taken per day.

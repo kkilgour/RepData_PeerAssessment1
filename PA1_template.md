@@ -9,22 +9,21 @@ dataset <- read.csv('activity.csv')
 ```
 
 ## What is mean total number of steps taken per day?
-Calculate the total number of steps taken per day.
+
 
 ```r
+# Calculate the total number of steps taken per day.
 # Include the plyr library to be able to use the ddply function
 library(plyr)
+
 # Sum the total number of steps by date
 daily <- ddply(dataset, "date", summarize, total.steps = sum(steps))
+
+# Make a histogram of the total number of steps taken each day.
+hist(daily$total.steps, breaks=20, main='Daily Steps Histogram', xlab='Daily Total Steps')
 ```
 
-Make a histogram of the total number of steps taken each day.
-
-```r
-hist(daily$total.steps, breaks=20)
-```
-
-![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
 
 Calculate and report the mean and median of the total number of steps taken per day.
 
@@ -47,7 +46,7 @@ typical.day <- ddply(dataset, "interval", summarize, avg.steps = mean(steps, na.
 ggplot(data=typical.day, mapping=aes(x=interval, y=avg.steps)) + geom_line()
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
@@ -90,7 +89,7 @@ daily.merged <- ddply(dataset.merged, "date", summarize, total.steps = sum(steps
 hist(daily.merged$total.steps, breaks=20)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
 
 ```r
 daily.mean2 <- mean(daily.merged$total.steps)
@@ -118,4 +117,4 @@ typical.days <- ddply(dataset, c("interval","weekday"), summarize, avg.steps = m
 ggplot(data=typical.days, mapping=aes(x=interval, y=avg.steps)) + geom_line() + facet_wrap(~weekday, ncol=1, nrow=2)
 ```
 
-![](PA1_template_files/figure-html/unnamed-chunk-9-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-8-1.png) 
