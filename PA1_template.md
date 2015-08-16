@@ -35,15 +35,17 @@ daily.median <- median(daily$total.steps, na.rm=TRUE)
 The mean daily steps taken is 10766.19 and the median daily steps taken is 10765.
 
 ## What is the average daily activity pattern?
-Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 ```r
+# Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 # Import the ggplot library
 library(ggplot2)
+
 # Calculate a typical day by averaging the number of steps taken at each interval
 typical.day <- ddply(dataset, "interval", summarize, avg.steps = mean(steps, na.rm=TRUE))
+
 # Plot a typical day line graph
-ggplot(data=typical.day, mapping=aes(x=interval, y=avg.steps)) + geom_line()
+ggplot(data=typical.day, mapping=aes(x=interval, y=avg.steps)) + geom_line() + labs(x='5 Minute Interval', y='Average Steps')
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
@@ -58,17 +60,18 @@ ordered <- arrange(typical.day, desc(avg.steps))
 The interval with the maximum number of steps is ``835``.
 
 ## Imputing missing values
-Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
 ```r
+# Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 # Subset the dataset to find the rows with missing values
 na.dataset <- subset(dataset, subset = is.na(steps))
 ```
 There are ``2304`` rows with missing values.
 
-Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
 
 ```r
+# Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+# I have chosen to replace the missing value with the average for that 5-minute interval.
 # Merge the na.dataset with the typical day dataset on the interval column
 na.merged <- merge(x=na.dataset, y=typical.day, all.x = TRUE, all.y = FALSE, by = 'interval')
 na.merged$steps <- na.merged$avg.steps
@@ -86,7 +89,7 @@ dataset.merged <- subset(dataset.merged, select=c('steps', 'date', 'interval'))
 
 #Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day.
 daily.merged <- ddply(dataset.merged, "date", summarize, total.steps = sum(steps))
-hist(daily.merged$total.steps, breaks=20)
+hist(daily.merged$total.steps, breaks=20, main='Histogram of Total Daily Steps, with NA Replacement')
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
@@ -97,7 +100,7 @@ daily.median2 <- median(daily.merged$total.steps)
 ```
 The mean daily steps taken is 10766.19 and the median daily steps taken is 10766.19.
 
-Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+**Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?**
 The mean value is the same as in the first part of the assignment, but the median now matches the mean and is slightly higher than in the first part of the assignment.  Comparing the histograms to one another, the frequency of days around the mean is much higher than it was before.
 
 ## Are there differences in activity patterns between weekdays and weekends?
